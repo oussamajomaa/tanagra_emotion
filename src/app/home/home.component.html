@@ -1,0 +1,136 @@
+<div style="display: flex">
+   
+    <div style="position: absolute; top:50vh; left:50vw; z-index:1300" *ngIf="!loading"
+        class="d-flex align-items-center">
+        <div class="spinner-border mx-1" style="font-size: 20px;" role="status"></div>
+        <span class="sr-only">Loading...</span>
+    </div>
+    <div style="height: 100vh; width:100vw; background:silver; position:absolute; top:0; left:0; z-index:1200; opacity:0.5"
+        *ngIf="!loading"></div>
+
+    <div class="bg-light" style="height: 100vh; width:10%">
+
+    </div>
+    <div class=" p-3" style="height: 100vh; width:80%">
+
+        <textarea placeholder="Enter text max 400 words..." (input)="wordCounter()" #text
+            style="width: 100%; padding:5px; height:20vh" class="form-control "></textarea>
+
+        <div class="d-flex justify-content-between align-items-center my-2">
+            <div>
+                <button class="btn btn-dark btn-sm " (click)="sendText()" [disabled]="!spinner">Send
+                    Text</button>
+                <button class="btn btn-dark btn-sm mx-2" (click)="resetText()">Reset</button>
+
+
+            </div>
+            <div class="d-flex">
+                <div class="form-check mx-1">
+                    <input class="form-check-input" type="radio" name="exampleRadios" id="exampleRadios1" value="en"
+                        checked (change)="handleChange($event)">
+                    <label class="" for="exampleRadios1">
+                        English Model
+                    </label>
+                </div>
+                <div class="form-check mx-1">
+                    <input class="form-check-input" type="radio" name="exampleRadios" id="exampleRadios2" value="fr"
+                        (change)="handleChange($event)">
+                    <label class="form-check-label" for="exampleRadios2">
+                        French Model
+                    </label>
+                </div>
+            </div>
+            <div>
+                <span style="font-size: 13px;">{{words}} Words</span>
+            </div>
+        </div>
+        <div style="position: absolute; top:calc(20vh + 26px); left: calc(10vw + 180px);">
+            <div *ngIf="!spinner" class="mx-1 spinner-grow spinner-grow-sm bg-danger" role="status"></div>
+            <div *ngIf="!spinner" class="mx-1 spinner-grow spinner-grow-sm bg-primary" role="status"></div>
+            <div *ngIf="!spinner" class="mx-1 spinner-grow spinner-grow-sm bg-warning" role="status"></div>
+        </div>
+        <!--
+-->
+        <div>
+
+        </div>
+        <div>
+            <span *ngFor="let place of pl; let i = index">
+
+                <label for="checkbox{{i}}" class="m-1 btn btn-sm" [ngClass]="{
+                       'btn-outline-danger' : place.emotions === 'Negative' , 
+                       'btn-outline-primary' : place.emotions === 'Positive' ,
+                       'btn-outline-warning' : place.emotions === 'Neutral'
+                      }">
+
+                    <input type="checkbox" id="checkbox{{i}}" class="check-place check-{{place.emotions}}"
+                        (change)="checkLocation($event, place)">
+                    {{place.name}} -- {{place.country}}
+                </label>
+            </span>
+
+        </div>
+
+        <div class="" id="map" style="height: calc(80vh - 260px);">
+            <img src="assets/center.png" alt=""
+                style="position:absolute; top:80px; left: 12px; z-index:450; cursor:pointer" (click)="fitOnMap()">
+            <!-- Spinner -->
+
+        </div>
+        <div style="height: 180px" class="bg-light p-3 mt-1" *ngIf="pl.length === 0">
+            <p style="text-align: justify;">Ce développement vise à mettre en place une interface web pour la
+                géolocalisation et la cartographie des
+                noms de lieux dans les textes. À partir d’un corpus de textes, l’application permet d’identifier les
+                noms de lieu à l’aide de l’application <strong>SpaCy</strong>. Ensuite, les lieux reconnus sont
+                géolocalisés en utilisant
+                la base de données de <strong>Geonames</strong>, puis projetés sur une carte interactive
+                <strong>Leaflet</strong>.</p>
+        </div>
+        <div class="my-2" *ngIf="pl.length > 0">
+            <button class="btn btn-sm m-1"
+                [ngClass]="{'btn-outline-dark' : emotion === 'all' , 'btn-dark' : emotion != 'all'}"
+                (click)="displayAllOnMap('all')">All <span
+                    class="badge bg-dark">{{geonameService.pl.length}}</span></button>
+            <button class="btn btn-sm m-1"
+                [ngClass]="{'btn-outline-secondary' : emotion === 'Negative' , 'btn-secondary' : emotion != 'Negative'}"
+                (click)="displayAllOnMap('Negative')" [disabled]="geonameService.neg === 0">
+                Negative <span class="badge bg-danger">{{geonameService.neg}}</span>
+            </button>
+            <button class="btn btn-sm m-1"
+                [ngClass]="{'btn-outline-secondary' : emotion === 'Positive' , 'btn-secondary' : emotion != 'Positive'}"
+                (click)="displayAllOnMap('Positive')" [disabled]="geonameService.pos === 0">
+                Positive <span class="badge bg-primary">{{geonameService.pos}}</span>
+            </button>
+            <button class="btn btn-sm m-1"
+                [ngClass]="{'btn-outline-secondary' : emotion === 'Neutral' , 'btn-secondary' : emotion != 'Neutral'}"
+                (click)="displayAllOnMap('Neutral')" [disabled]="geonameService.neu === 0">
+                Neutral <span class="badge bg-warning">{{geonameService.neu}}</span>
+
+            </button>
+        </div>
+
+
+    </div>
+    <div class="bg-light" style="height: 100vh; width:10%"></div>
+
+</div>
+
+
+<!--
+
+
+London is the capital and largest city of England and the United Kingdom, with a population of just under 9 million. 
+It stands on the River Thames in south-east England at the head of a 50-mile (80 km) estuary down to the North Sea, and has been a major settlement for two millennia.
+The City of London, its ancient core and financial centre, was founded by the Romans as Londinium and retains its medieval boundaries.
+The City of Westminster, to the west of the City of London, has for centuries hosted the national government and parliament. 
+Since the 19th century, the name "London" has also referred to the metropolis 
+around this core, historically split between the counties of Middlesex, Essex, 
+Surrey, Kent, and Hertfordshire, which since 1965 has largely comprised Greater London, 
+which is governed by 33 local authorities and the Greater London Authority.
+New York is a big citye in USA.
+Paris is the capitale of France.
+
+
+
+La tour Eiffel [tuʁɛfɛl] est une tour de fer puddlé de 330 m de hauteur située à Paris, à l’extrémité nord-ouest du parc du Champ-de-Mars en bordure de la Seine dans le 7ᵉ arrondissement. Son adresse officielle est 5, avenue Anatole-France.
+-->
